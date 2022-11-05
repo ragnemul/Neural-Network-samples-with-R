@@ -1,7 +1,7 @@
 library(neuralnet)
 library(caret)
-#data = read.csv("https://raw.githubusercontent.com/ragnemul/K-NN/main/Ejercicio_4.1/RidingMowers.csv")
-data = read.csv("/Users/luismg/ragnemul@gmail.com - Google Drive/My Drive/Comillas/Redes Neuronales/Ejercicios/Ejercicio 1/RidingMowers.csv")
+
+data = read.csv("https://raw.githubusercontent.com/ragnemul/Neural-Network-samples-with-R/main/Ejercicios/Ejercicio_1/RidingMowers.csv")
 
 # eliminamos los valores nulos
 data = na.omit(data)
