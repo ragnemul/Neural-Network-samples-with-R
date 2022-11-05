@@ -53,7 +53,8 @@ nn <- neuralnet(Ownership =="Owner" ~ Income + Lot_Size, data = data.norm, linea
 
 predict <- compute(nn, data.frame(data.norm[1], data.norm[2]))
 predicted.class=apply(predict$net.result,1,round)
-confusionMatrix(as.factor(ifelse(predicted.class=="1", "Owner", "Nonowner")),as.factor(data$Ownership))
+confusionMatrix(as.factor(ifelse(predicted.class=="1", "Owner", "Nonowner")),as.factor(data$Ownership),
+                positive = "Owner")
 
 
 # Mostramos la recta que separa los dos conjuntos de datos
