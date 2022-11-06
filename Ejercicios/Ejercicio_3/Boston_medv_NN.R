@@ -11,11 +11,16 @@ sample(Boston, 3)
 summary(Boston)
 
 
+
+preProcValues <- preProcess(Boston, method = c("center", "scale", "nzv"))
+data.centered.scaled <- predict(preProcValues, Boston)
+
+
 # Split the data into training and test set
 set.seed(2)
-training.samples <- caret::createDataPartition(Boston$medv, p = 0.8, list = FALSE)
-train.data  <- Boston[training.samples, ]
-test.data <- Boston[-training.samples, ]
+training.samples <- caret::createDataPartition(data.centered.scaled$medv, p = 0.8, list = FALSE)
+train.data  <- data.centered.scaled[training.samples, ]
+test.data <- data.centered.scaled[-training.samples, ]
 
 
 
@@ -27,20 +32,19 @@ tuneGrid = expand.grid(size=seq(from = 1, to = 10, by = 1),
                         decay = seq(from = 0.1, to = 0.5, by = 0.1))
 
 
-rf_fit = caret::train(Attrition ~ ., data = train, method = "nnet",
+rf_fit = caret::train(medv ~ ., data = train.data, method = "nnet",
                        trControl = fitControl,
-                       preProcess = c("center","scale"),
                        tuneGrid=tuneGrid)
 
 
 # Plot model error RMSE vs different values of k
-plot(model)
+plot(rf_fit)
 
 # Best tuning parameter k that minimize the RMSE
-model$bestTune
+rf_fit$bestTune
 
 # Make predictions on the test data
-predictions <- predict(model,test.data)
+predictions <- predict(rf_fit,test.data)
 head(predictions)
 
 # Compute the prediction error RMSE
