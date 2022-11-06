@@ -47,13 +47,13 @@ rf_fit = caret::train(Attrition ~ ., data = train, method = "mlpML",
 
 
 
-# fitControl2 = expand.grid(size=seq(from = 1, to = 10, by = 1),
-#             decay = seq(from = 0.1, to = 0.5, by = 0.1))
+tuneGrid2 = expand.grid(size=seq(from = 1, to = 10, by = 1),
+            decay = seq(from = 0.1, to = 0.5, by = 0.1))
 
 rf_fit2 = caret::train(Attrition ~ ., data = train, method = "nnet",
                       trControl = fitControl,
                       preProcess = c("center","scale"),
-                      tuneGrid=fitControl2)
+                      tuneGrid=tuneGrid2)
 
 
 library(nnet)
