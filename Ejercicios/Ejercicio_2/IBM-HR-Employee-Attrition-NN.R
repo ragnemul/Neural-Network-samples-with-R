@@ -58,13 +58,13 @@ rf_fit2 = caret::train(Attrition ~ ., data = train, method = "nnet",
 
 library(nnet)
 train[,45] = ifelse(train[,45] == "No",0,1)
-rf_fit3 <- nnet(Attrition~., data = train, size = 5, maxit = 5000, decay = .01)
+rf_fit3 <- nnet(Attrition~., data = train, size = 20, maxit = 5000, decay = .01)
 
 
 
 ######################################
 # curvas ROC PARA COMPARAR LOS MODELOS
-
+library(pROC)
 # para las curvas ROC
 xtest <- subset(test, select = -c(Attrition))
 ytest <- as.data.frame(test$Attrition)
