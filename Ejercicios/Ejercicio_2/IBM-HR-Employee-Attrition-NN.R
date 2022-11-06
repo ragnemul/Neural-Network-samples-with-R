@@ -35,18 +35,30 @@ train <- data.dummies[train_split_idx, ]
 test <- data.dummies[-train_split_idx, ]
 
 
-fitControl <- trainControl(method = "repeatedcv", 
-                           number = 5, 
-                           repeats = 3, 
-                           classProbs = TRUE, 
-                           summaryFunction = twoClassSummary)
+fitControl <- trainControl(method = "repeatedcv", # validación cruzada con repetición
+                           number = 5,            # número de paquetes de muestra
+                           repeats = 3,           # repeticiones
+                           classProbs = TRUE,     # clasificación
+                           summaryFunction = twoClassSummary) # para optimizar métricas 
 
-
-rf_fit = caret::train(Attrition ~ ., data = train, method = "nnet",
+rf_fit = caret::train(Attrition ~ ., data = train, method = "mlpML",
                       trControl = fitControl,
                       preProcess = c("center","scale"))
 
 
+
+fitControl2 = expand.grid(size=seq(from = 1, to = 10, by = 1),
+            decay = seq(from = 0.1, to = 0.5, by = 0.1))
+
+rf_fit2 = caret::train(Attrition ~ ., data = train, method = "nnet",
+                      trControl = fitControl,
+                      preProcess = c("center","scale"),
+                      tuneGrid=fitControl2)
+
+
+library(nnet)
+train[,45] = ifelse(train[,45] == "No",0,1)
+rf_fit3 <- nnet(Attrition~., data = train, size = 5, maxit = 5000, decay = .01)
 
 
 
@@ -58,12 +70,21 @@ xtest <- subset(test, select = -c(Attrition))
 ytest <- as.data.frame(test$Attrition)
 
 pred.prob <- predict (rf_fit, newdata = xtest, type="prob")
-
 roc_obj <- roc (ytest$`test$Attrition`, pred.prob[,1])
 plot(roc_obj, print.auc = TRUE, print.auc.y = 0.6, col = "red")
 
+pred.prob <- predict (rf_fit2, newdata = xtest, type="prob")
+roc_obj <- roc (ytest$`test$Attrition`, pred.prob[,1])
+plot(roc_obj, print.auc = TRUE, print.auc.y = 0.5, col = "green", add=T)
+
+pred.prob <- predict(rf_fit3, newdata = xtest, type="raw")
+roc_obj <- roc (ytest$`test$Attrition`, pred.prob[,1])
+plot(roc_obj, print.auc = TRUE, print.auc.y = 0.4, col = "blue", add=T)
+
 # curvas ROC PARA COMPARAR LOS MODELOS
 ######################################
+
+
 
 
 
@@ -71,8 +92,24 @@ plot(roc_obj, print.auc = TRUE, print.auc.y = 0.6, col = "red")
 # Matriz de confusion
 
 preds <- predict(rf_fit, newdata=xtest, type="raw")
-caret::confusionMatrix(as.factor(preds), as.factor(test$Attrition),positive="Yes")
+confusion_matrix <- caret::confusionMatrix(as.factor(preds), as.factor(test$Attrition),positive="Yes")
+# Mostramos la matriz de confusión
+draw_2D_confusion_matrix(cm = confusion_matrix, caption = "Matriz de confusión test 1")
+
+preds <- predict(rf_fit2, newdata=xtest, type="raw")
+confusion_matrix <- caret::confusionMatrix(as.factor(preds), as.factor(test$Attrition),positive="Yes")
+# Mostramos la matriz de confusión
+draw_2D_confusion_matrix(cm = confusion_matrix, caption = "Matriz de confusión test 2")
+
+
+ytest_num <- unlist(ifelse(ytest == "Yes",1,0))
+preds <- unlist(round(predict(rf_fit3, newdata = xtest, type="raw")))
+confusion_matrix <- caret::confusionMatrix(as.factor(preds), as.factor(ytest_num),positive="1")
+draw_2D_confusion_matrix(cm = confusion_matrix, caption = "Matriz de confusión rf_fit2")
 
 # Matriz de confusion
 ######################################
+
+source_url('https://gist.githubusercontent.com/fawda123/7471137/raw/466c1474d0a505ff044412703516c34f1a4684a5/nnet_plot_update.r')
+plot.nnet(rf_fit3)
 
