@@ -47,8 +47,8 @@ rf_fit = caret::train(Attrition ~ ., data = train, method = "mlpML",
 
 
 
-fitControl2 = expand.grid(size=seq(from = 1, to = 10, by = 1),
-            decay = seq(from = 0.1, to = 0.5, by = 0.1))
+# fitControl2 = expand.grid(size=seq(from = 1, to = 10, by = 1),
+#             decay = seq(from = 0.1, to = 0.5, by = 0.1))
 
 rf_fit2 = caret::train(Attrition ~ ., data = train, method = "nnet",
                       trControl = fitControl,
@@ -105,7 +105,7 @@ draw_2D_confusion_matrix(cm = confusion_matrix, caption = "Matriz de confusión 
 ytest_num <- unlist(ifelse(ytest == "Yes",1,0))
 preds <- unlist(round(predict(rf_fit3, newdata = xtest, type="raw")))
 confusion_matrix <- caret::confusionMatrix(as.factor(preds), as.factor(ytest_num),positive="1")
-draw_2D_confusion_matrix(cm = confusion_matrix, caption = "Matriz de confusión rf_fit2")
+draw_2D_confusion_matrix(cm = confusion_matrix, caption = "Matriz de confusión test 3")
 
 # Matriz de confusion
 ######################################
