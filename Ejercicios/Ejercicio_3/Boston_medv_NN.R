@@ -12,7 +12,8 @@ summary(Boston)
 
 
 
-preProcValues <- preProcess(Boston, method = c("center", "scale", "nzv"))
+#preProcValues <- preProcess(Boston, method = c("center", "scale", "nzv"))
+preProcValues <- preProcess(Boston, method = c("range"))
 data.centered.scaled <- predict(preProcValues, Boston)
 
 
